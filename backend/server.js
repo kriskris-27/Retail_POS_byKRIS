@@ -3,7 +3,8 @@ const cors =require("cors")
 const dotenv =require("dotenv");
 const connectDB = require("./config/db")
 
-dotenv.config();
+dotenv.config(); //to load env variables
+//step2 call to connect
 connectDB();
 
 const app = express(); // express is starts here
@@ -14,11 +15,16 @@ app.use(express.json()); //we can just communicate by using cors but what data t
 
 const PORT = process.env.PORT ||  5000
 
+//test route
 app.get('/',(req,res)=>{
     res.send("HI from Retail backend API ")
 });
-
 app.listen(PORT ,()=>{
     console.log(`Server is running on PORT  ${PORT}`);
-    
 })
+
+
+//all routes which will be in action
+const productRoutes = require("./routes/productRoutes");
+app.use("/api/products",productRoutes)
+
