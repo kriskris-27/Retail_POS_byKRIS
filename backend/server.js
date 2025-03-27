@@ -28,3 +28,6 @@ app.listen(PORT ,()=>{
 const productRoutes = require("./routes/productRoutes");
 app.use("/api/products",productRoutes)
 
+const userRoutes = require("./routes/userRoutes.js");
+app.use("/api/users", userRoutes);
+
