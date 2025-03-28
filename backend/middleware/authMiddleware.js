@@ -13,9 +13,16 @@ const protect = (req,res,next)=>{
     }
 }
 
-const adminonly = (req,res,next)=>{
+const adminOnly = (req,res,next)=>{
     if (req.user.role !== "admin") return res.status(403).json({ message: "Access denied hey only admins allowed" });
     next();
 };
 
-module.exports={protect , adminonly}
+const cashierOnly=(req,res,next)=>{
+    if(req.user.role!=="cashier"){
+        return res.status(403).json({message:"Access denied.Cashiers only."})
+    }
+    next()
+}
+
+module.exports={protect,adminOnly,cashierOnly}

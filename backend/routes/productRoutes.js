@@ -1,7 +1,7 @@
 const express= require("express")
 const router = express.Router()
 const Product = require("../models/productSchMdl");
-const {protect ,adminonly} = require("../middleware/authMiddleware")
+const {protect ,adminOnly} = require("../middleware/authMiddleware")
 
 
 router.get("/", async(req,res)=>{
@@ -47,7 +47,7 @@ router.put("/:id",async (req,res)=>{
     }
 })
 
-router.delete("/:id",protect,adminonly,async(req,res)=>{
+router.delete("/:id",protect,adminOnly,async(req,res)=>{
     try{
         const pdt = await Product.findById(req.params.id);// await here because this is a(findById) callback function
         if(!pdt){
