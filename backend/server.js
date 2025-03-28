@@ -31,3 +31,6 @@ app.use("/api/products",productRoutes)
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/api/users", userRoutes);
 
+
+const billRoutes = require("./routes/billRoutes.js");
+app.use("/api/bills",billRoutes)
