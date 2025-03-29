@@ -7,6 +7,8 @@ const protect = (req,res,next)=>{
     try{
         const decoded =jwt.verify(token,"secretKey");
         req.user=decoded;
+        console.log(decoded);
+        
         next();
     }catch(error){
         res.status(401).json({ message: "Invalid token" });
@@ -25,4 +27,11 @@ const cashierOnly=(req,res,next)=>{
     next()
 }
 
-module.exports={protect,adminOnly,cashierOnly}
+const adminOrManager=(req,res,next)=>{
+    if(req.user.role!=="admin" && req.user.role!=="manager"){
+        return res.status(403).json({message:"Access denied.Cashiers only."})
+    }
+    next()
+}
+
+module.exports={protect,adminOnly,cashierOnly,adminOrManager}
