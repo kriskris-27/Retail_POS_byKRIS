@@ -31,15 +31,19 @@ app.use("/api/products",productRoutes)
 //user
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/api/users", userRoutes);
-//bill
-const billRoutes = require("./routes/billRoutes.js");
-app.use("/api/bills",billRoutes)
-//sales
+
+//sales report (daily,weekly,monthly)
 const salesReportRoutes = require("./routes/salesReportRoutes.js")
     app.use("/api/reports",salesReportRoutes)
+    
 //inventory
 const inventoryRoutes=require("./routes/inventoryRoutes.js")
     app.use("/api/inventory",inventoryRoutes);
+
 //Invoice PDF
 const billingRoutes = require("./routes/billingRoutes.js");
 app.use("/api/billing",billingRoutes);
+
+//Advanced sales report with profit generation
+const advancedreport=require("./routes/reportRoutes.js");
+app.use("/api/advanced-reports",advancedreport)
