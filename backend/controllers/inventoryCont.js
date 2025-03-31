@@ -1,8 +1,12 @@
 const Product = require("../models/productSchMdl")
 
+
 exports.lowStock=async (req,res)=>{
     try{
         const lowStockProducts= await Product.find({stock:{$lt:5}});
+        if (lowStockProducts.length === 0) {
+            return res.json({ message: "No low-stock products" });
+          }
         res.json(lowStockProducts)
     }catch(error)
     {
