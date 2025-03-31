@@ -46,6 +46,16 @@ exports.saveInvoice = async (req, res) => {
     }
 };
 
+
+exports.fetchBill=async (req,res)=>{
+    try{
+        const bills =await Bill.find().populate("cashier","name").populate("items.product","name price");
+        res.json(bills);
+    }catch(error)
+    {
+        res.status(500).json({message:"Error fetching bills"});
+    }
+}
 // Generate PDF Invoice
 exports.generatePDF = async (req, res) => {
     try {
