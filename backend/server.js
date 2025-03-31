@@ -27,13 +27,15 @@ app.listen(PORT ,()=>{
 //all routes which will be in action
 const productRoutes = require("./routes/productRoutes");
 app.use("/api/products",productRoutes)
-
+//user
 const userRoutes = require("./routes/userRoutes.js");
 app.use("/api/users", userRoutes);
-
-
+//bill
 const billRoutes = require("./routes/billRoutes.js");
 app.use("/api/bills",billRoutes)
-
+//sales
 const salesReportRoutes = require("./routes/salesReportRoutes.js")
     app.use("/api/reports",salesReportRoutes)
+//inventory
+const inventoryRoutes=require("./routes/inventoryRoutes.js")
+    app.use("/api/inventory",inventoryRoutes);
