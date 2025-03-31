@@ -10,13 +10,16 @@ exports.listProducts=async(req,res)=>{
 }
 
 exports.createProduct=async(req,res)=>{
+    const {name,price,costPrice,stock,category,expiryDate} = req.body;
+    if (!name || !price || !costPrice || !stock || !category) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
     try{
-        const {name,price,stock,category,expiryDate} = req.body;
-        const product = new Product({name,price,stock,category,expiryDate});
+        const product = new Product({name,price,costPrice,stock,category,expiryDate});
         await product.save();
         res.status(201).json({message:"Successfully created",product});
     }catch(error){
-        res.status(400).json({message:"Error adding product"})
+        res.status(500).json({message:"Error adding product"})
     }
 }
 
@@ -30,6 +33,7 @@ exports.updateProduct=async (req,res)=>{
 
         pdt.name=req.body.name || pdt.name;
         pdt.price =req.body.price || pdt.price;
+        pdt.stockPrice=req.body.stockPrice || pdt.stockPrice;
         pdt.stock =req.body.stock || pdt.stock;
         pdt.category =req.body.category || pdt.category;
         pdt.expiryDate =req.body.expiryDate || pdt.expiryDate;
