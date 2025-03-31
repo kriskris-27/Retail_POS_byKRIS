@@ -1,51 +1,56 @@
 const Bill = require("../models/billModel");
-const PDFDocument=require("pdfkit");
+const Product = require("../models/productSchMdl");
+const PDFDocument = require("pdfkit");
 
-exports.saveInvoice= async(req,res)=>{
-    try{
-        const {items,paymentMethod} = req.body;
-        
-    for (const item of items) {
-        const product = await Product.findById(item.product);
-        if (!product) return res.status(404).json({ message: "Product not found" });
-  
-        if (product.stock < item.quantity) {
-          return res.status(400).json({ message: `Not enough stock for ${product.name}` });
+exports.saveInvoice = async (req, res) => {
+    try {
+        const { items, paymentMethod } = req.body;
+
+        // Validate stock in a single query for efficiency
+        const productIds = items.map(item => item.product);
+        const products = await Product.find({ _id: { $in: productIds } });
+
+        for (const item of items) {
+            const product = products.find(p => p._id.toString() === item.product);
+            if (!product) return res.status(404).json({ message: "Product not found" });
+
+            if (product.stock < item.quantity) {
+                return res.status(400).json({ message: `Not enough stock for ${product.name}` });
+            }
         }
-      }
-  
-      // Deduct stock after validation
-      for (const item of items) {
-        const product = await Product.findById(item.product);
-        product.stock -= item.quantity;
-        await product.save();
-      }
 
-        const totalAmount=items.reduce((acc,item)=>acc+item.price*item.quantity,0);
+        // Deduct stock & Save product updates
+        for (const item of items) {
+            const product = products.find(p => p._id.toString() === item.product);
+            product.stock -= item.quantity;
+            await product.save();
+        }
 
+        // Calculate total amount
+        const totalAmount = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+        // Save the invoice (bill)
         const newBill = new Bill({
-            items, 
+            items,
             totalAmount,
             paymentMethod,
-            cashier:req.user._id
+            cashier: req.user._id
         });
         await newBill.save();
-        res.json({message:"Invoice created successfully",billId:newBill._id});
-    }
-    catch(error)
-    {
+
+        res.json({ message: "Invoice created successfully", billId: newBill._id });
+
+    } catch (error) {
+        console.error("Invoice Error:", error);
         res.status(500).json({ message: "Error generating invoice" });
-
     }
-}
+};
 
+// Generate PDF Invoice
 exports.generatePDF = async (req, res) => {
     try {
         const bill = await Bill.findById(req.params.billId)
-            .populate({
-                path: "items.product",
-                select: "name price", // Only fetch name and price
-            });
+            .populate("items.product", "name price");
 
         if (!bill) return res.status(404).json({ message: "Invoice not Found" });
 
@@ -58,20 +63,19 @@ exports.generatePDF = async (req, res) => {
         doc.fontSize(20).text("Your Purchase Invoice", { align: "center" });
         doc.fontSize(14).text(`Total Amount : ₹${bill.totalAmount}`);
         doc.text(`Payment Method: ${bill.paymentMethod}`);
-        doc.text("\nItems purchased:\n");
+        doc.moveDown();
 
-        // Ensure product exists and has a name
+        doc.fontSize(14).text("Items Purchased:");
         bill.items.forEach((item) => {
-            const productName = item.product?.name || "Unknown Product";
-            const productPrice = item.product?.price || item.price; // Use saved price if not populated
-            doc.text(`${productName} - ₹${productPrice} x ${item.quantity}`);
+            doc.text(`${item.product?.name || "Unknown"} - ₹${item.product?.price || item.price} x ${item.quantity}`);
         });
 
+        doc.moveDown();
         doc.fontSize(8).text("Software by kris", { align: "center" });
 
         doc.end();
     } catch (error) {
-        console.error(error);
+        console.error("PDF Error:", error);
         if (!res.headersSent) {
             res.status(500).json({ message: "Error generating PDF" });
         }
