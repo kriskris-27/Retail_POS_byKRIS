@@ -47,3 +47,7 @@ app.use("/api/billing",billingRoutes);
 //Advanced sales report with profit generation
 const advancedreport=require("./routes/reportRoutes.js");
 app.use("/api/advanced-reports",advancedreport)
+
+//Admin 
+const adminAuth=require("./routes/adminRoutes.js");
+app.use("/api/admin",adminAuth)
