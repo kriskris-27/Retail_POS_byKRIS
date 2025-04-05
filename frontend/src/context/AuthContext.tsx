@@ -1,93 +1,77 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authApi } from '../api/api';
-import { User, AuthState } from '../types';
+import { createContext , ReactNode, useContext ,useEffect,useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  hasRole: (role: string) => boolean;
-}
+type User = {email: string;token: string; role: string};
+
+type AuthContextType={
+    user:User|null;
+    login:(email: string,password: string)=>Promise<void>;
+    logout:()=>void;
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    token: null,
-    isAuthenticated: false,
-    loading: true,
-    error: null,
-  });
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Here you would typically verify the token with the backend
-      // For now, we'll just set the token
-      setState(prev => ({
-        ...prev,
-        token,
-        isAuthenticated: true,
-        loading: false,
-      }));
-    } else {
-      setState(prev => ({ ...prev, loading: false }));
+export const AuthProvider = ({children}:{children:ReactNode}) => {
+    const [user,setUser] = useState<User | null>(()=>{
+        const stored = sessionStorage.getItem("user");
+        return stored ? JSON.parse(stored):null;
+    })
+    const navigate =useNavigate();
+
+    useEffect(()=>{
+        if(user){
+            sessionStorage.setItem("user",JSON.stringify(user));
+        }else{
+            sessionStorage.removeItem("user");
+        }
+    },[user]);
+ 
+    
+    const login = async(email:string ,password:string)=>{
+        // if(email && password){
+        //     setUser({email});
+        //     navigate("/");
+        // }
+
+        try{
+            const res= await fetch("https://retail-pos-bykris.onrender.com/api/users/login", {
+                method:"POST",
+                headers:{"Content-Type" : "application/json"},
+                body:JSON.stringify({email,password})
+            });
+            if(!res.ok) throw new Error("Invalid credentials");
+            const data = await res.json();
+            const userData = {
+                email,
+                token: data.token,
+                role: data.role,
+              };
+            setUser(userData);
+            sessionStorage.setItem("user", JSON.stringify(userData));
+            navigate("/");
+        }
+        catch(err) {
+            console.error("Login failed:",err);
+            alert("Login failed: Invalid credentials or network issue");
+        }
+    };
+
+    const logout = () =>{
+        setUser(null);
+        sessionStorage.removeItem("user");
+        navigate("/login");
     }
-  }, []);
+  return (
+    <AuthContext.Provider value={{user,login,logout}}>
+    {children}
+    </AuthContext.Provider>
+  )
+}
 
-  const login = async (email: string, password: string) => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      const response = await authApi.login({ email, password });
-      const { token, user } = response.data;
-      
-      localStorage.setItem('token', token);
-      setState({
-        user,
-        token,
-        isAuthenticated: true,
-        loading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: error.response?.data?.message || 'Login failed',
-      }));
-      throw error;
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    setState({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      loading: false,
-      error: null,
-    });
-  };
-
-  const hasRole = (role: string) => {
-    return state.user?.role === role;
-  };
-
-  const value = {
-    ...state,
-    login,
-    logout,
-    hasRole,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+export const useAuth = ()=>{
+    const context = useContext(AuthContext);
+    if(!context) throw new Error("useAuth must be used inside AuthProvider");
+    return context;
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}; 

@@ -1,9 +1,15 @@
-const Navbar = () => {
-    return (
-        <nav className="bg-blue-600 text-white p-4">
-            <h1 className="text-lg font-bold">Retail POS System</h1>
-        </nav>
-    );
-};
+import { useAuth } from "../context/AuthContext";
 
-export default Navbar;
+const Navbar = () => {
+    const {logout,user} = useAuth();
+    return (
+        <div className="h-16 bg-gray-200 px-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold">Retail POS</h2>
+          {user && (<button onClick={logout}>
+            Logout
+          </button>)}
+        </div>
+      );
+}
+
+export default Navbar
