@@ -1,8 +1,10 @@
-export default function App() {
+const App = () => {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-500 text-white text-3xl font-bold">
-        Tailwind is working! 🎉
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+        <h1 className="text-3xl font-bold">Retail POS System 🚀</h1>
       </div>
     );
-  }
+  };
+  
+  export default App;
   
