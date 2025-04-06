@@ -10,6 +10,7 @@ import Inventory from "./pages/Inventory";
 import Users from "./pages/Users";
 import NotFound from "./pages/NotFound";
 import Unauthorized from "./pages/Unauthorized";
+import AllbillsPage from "./pages/Allbills";
 
 const App = () => {
   return (
@@ -51,6 +52,7 @@ const App = () => {
       >
         <Route path="reports" element={<Reports />} />
         <Route path="inventory" element={<Inventory />} />
+        <Route path="allbills" element={<AllbillsPage/>}/>
       </Route>
 
       

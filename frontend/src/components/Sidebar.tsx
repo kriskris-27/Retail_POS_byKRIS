@@ -8,6 +8,7 @@ const Sidebar = () => {
     { name: "Dashboard", path: "/", roles: ["admin", "manager", "cashier"] },
     { name: "Products", path: "/products", roles: ["admin","manager"] },
     { name: "Billing", path: "/billing", roles: ["admin", "cashier"] },
+    {name:"Total Bills",path:"/allbills",roles:["admin", "manager","cashier",]},
     { name: "Sales Reports", path: "/reports", roles: ["admin", "manager"] },
     { name: "Inventory", path: "/inventory", roles: ["admin", "manager","cashier"] },
     { name: "Users", path: "/users", roles: ["admin"] },
