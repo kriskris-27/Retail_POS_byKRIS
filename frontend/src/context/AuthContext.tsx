@@ -1,12 +1,12 @@
 import { createContext , ReactNode, useContext ,useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-type User = {email: string;token: string; role: string};
+type User = {email: string;role: string};
 
 type AuthContextType={
     user:User|null;
     login:(email: string,password: string)=>Promise<void>;
-    logout:()=>void;
+    logout:()=>Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,20 +35,19 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
         // }
 
         try{
-            const res= await fetch("https://retail-pos-bykris.onrender.com/api/users/login", {
+            const res= await fetch("http://localhost:5000/api/users/login", {
                 method:"POST",
                 headers:{"Content-Type" : "application/json"},
+                credentials:"include",
                 body:JSON.stringify({email,password})
             });
-            if(!res.ok) throw new Error("Invalid credentials");
+            if(!res.ok) throw new Error("Login Failed");
             const data = await res.json();
             const userData = {
                 email,
-                token: data.token,
                 role: data.role,
               };
             setUser(userData);
-            sessionStorage.setItem("user", JSON.stringify(userData));
             navigate("/");
         }
         catch(err) {
@@ -57,10 +56,20 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
         }
     };
 
-    const logout = () =>{
-        setUser(null);
-        sessionStorage.removeItem("user");
-        navigate("/login");
+    const logout = async() =>{
+        try{
+            await fetch("http://localhost:5000/api/users/logout",{
+                method:"POST",
+                credentials:"include"
+            });
+            setUser(null);
+            sessionStorage.removeItem("user");
+            navigate("/login");
+        }catch(err){
+            console.error("Logout failed:", err);
+      alert("Logout failed. Try again.");
+        }
+        
     }
   return (
     <AuthContext.Provider value={{user,login,logout}}>
