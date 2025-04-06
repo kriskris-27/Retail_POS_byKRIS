@@ -3,7 +3,8 @@ const User = require('../models/userModel');
 
 const adminAuth= async(req,res,next)=>{
    
-        let token = req.header("Authorization");
+  
+    const token = req.cookies.token
         if(!token) return res.status(401).json({message:"No token,authorization denied"});
         // console.log("entered with token");
         try{
