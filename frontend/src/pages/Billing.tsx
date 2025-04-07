@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 type Product = {
   _id: string;
@@ -24,7 +26,7 @@ const BillingPage = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${BASE_URL}/products`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -69,7 +71,7 @@ const BillingPage = () => {
   };
 
   const handleCheckout = async () => {
-    const res = await fetch("http://localhost:5000/api/billing/create", {
+    const res = await fetch(`${BASE_URL}/billing/create`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -86,7 +88,7 @@ const BillingPage = () => {
     const data = await res.json();
     if (res.ok) {
       alert("Bill Saved!");
-      const billUrl = `http://localhost:5000/api/billing/invoice/${data.billId}`;
+      const billUrl = `${BASE_URL}/billing/invoice/${data.billId}`;
       window.open(billUrl, "_blank");
 
       // ✅ WhatsApp sending logic
