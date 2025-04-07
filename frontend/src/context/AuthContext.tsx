@@ -1,5 +1,7 @@
 import { createContext , ReactNode, useContext ,useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 type User = {email: string;role: string};
 
@@ -35,7 +37,7 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
         // }
 
         try{
-            const res= await fetch("http://localhost:5000/api/users/login", {
+            const res= await fetch(`${BASE_URL}/users/login`, {
                 method:"POST",
                 headers:{"Content-Type" : "application/json"},
                 credentials:"include",
@@ -58,7 +60,7 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
 
     const logout = async() =>{
         try{
-            await fetch("http://localhost:5000/api/users/logout",{
+            await fetch(`${BASE_URL}/api/users/logout`,{
                 method:"POST",
                 credentials:"include"
             });

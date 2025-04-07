@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import ProductFormModal from "../components/ProductFormModal";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 type Product = {
   _id: string;
@@ -22,7 +24,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
+      const res = await fetch(`${BASE_URL}/products`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -43,7 +45,7 @@ const Products = () => {
     if (!confirmDelete) return;
 
     try {
-      await fetch(`http://localhost:5000/api/products/${id}`, {
+      await fetch(`${BASE_URL}/products/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -58,8 +60,8 @@ const Products = () => {
   const handleCreateOrUpdate = async (formData: Omit<Product, "_id">) => {
     try {
       const endpoint = editProduct
-        ? `http://localhost:5000/api/products/${editProduct._id}`
-        : "http://localhost:5000/api/products/";
+        ? `${BASE_URL}/products/${editProduct._id}`
+        : `${BASE_URL}/products/`;
 
       const method = editProduct ? "PUT" : "POST";
         console.log(formData);

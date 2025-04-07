@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 type Product = {
   _id: string;
@@ -27,7 +28,7 @@ const AllbillsPage = () => {
 
   const fetchBills = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/billing/", {
+      const res = await fetch(`${BASE_URL}/billing/`, {
         credentials: "include",
       });
 
@@ -36,7 +37,7 @@ const AllbillsPage = () => {
       }
 
       const data: Bill[] = await res.json();
-      console.log((data));
+    //   console.log((data));
       
       setBills(data);
     } catch (err: unknown) {
@@ -93,7 +94,7 @@ const AllbillsPage = () => {
 
               <div className="mt-3 text-right">
                 <a
-                  href={`http://localhost:5000/api/billing/invoice/${bill._id}`}
+                  href={`${BASE_URL}/billing/invoice/${bill._id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline text-sm"

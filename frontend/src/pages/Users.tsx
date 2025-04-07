@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import UserFormModal from "../components/UserFormModal";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 type User = {
   _id: string;
@@ -27,7 +29,7 @@ const Users = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin", {
+      const res = await fetch(`${BASE_URL}/admin`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -47,7 +49,7 @@ const Users = () => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      await fetch(`http://localhost:5000/api/admin/delete/${id}`, {
+      await fetch(`${BASE_URL}/admin/delete/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -60,8 +62,8 @@ const Users = () => {
   const handleCreateOrUpdate = async (formData: UserFormData) => {
     try {
       const endpoint = editUser
-        ? `http://localhost:5000/api/admin/update/${editUser._id}`
-        : "http://localhost:5000/api/admin/create";
+        ? `${BASE_URL}/admin/update/${editUser._id}`
+        : `${BASE_URL}/admin/create`;
 
       const method = editUser ? "PUT" : "POST";
 
