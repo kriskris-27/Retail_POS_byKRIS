@@ -20,7 +20,7 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-gray-800 text-white min-h-screen p-4">
-      <h1 className="text-2xl font-bold mb-6">Retail POS</h1>
+      <h1 className="text-2xl font-bold mb-6">Bill Vision POS</h1>
       <nav className="space-y-1">
         {filteredNavItems.map((item) => (
           <NavLink

@@ -5,7 +5,7 @@ const Navbar = () => {
 
   return (
     <div className="h-16 bg-white border-b px-6 flex items-center justify-between shadow-sm">
-      <h2 className="text-2xl font-semibold text-gray-800">Retail POS</h2>
+      <h2 className="text-2xl font-semibold text-gray-800">Bill Vision POS</h2>
 
       {user && (
         <div className="flex items-center gap-4">

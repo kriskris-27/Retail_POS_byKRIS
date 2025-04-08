@@ -146,7 +146,7 @@ const BillingPage = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">🧾 Retail POS - Billing</h2>
+      <h2 className="text-2xl font-bold mb-4">🧾 Bill Vision POS - Billing</h2>
 
       {/* Category Buttons for Fast Product Selection */}
       {Object.entries(groupedProducts).map(([category, catProducts]) => (
