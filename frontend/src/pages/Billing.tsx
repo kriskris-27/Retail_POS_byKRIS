@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 type Product = {
   _id: string;
   name: string;
   price: number;
   stock: number;
+  category: string;
 };
 
 type BillItem = {
@@ -45,6 +46,7 @@ const BillingPage = () => {
     if (!product || quantity <= 0 || quantity > product.stock) return;
 
     const existingItem = billItems.find((item) => item.product === product._id);
+
     if (existingItem) {
       const updatedItems = billItems.map((item) =>
         item.product === product._id
@@ -63,7 +65,16 @@ const BillingPage = () => {
         },
       ]);
     }
+
+    // Reduce stock instantly in UI
+    const updatedProducts = products.map((p) =>
+      p._id === product._id ? { ...p, stock: p.stock - quantity } : p
+    );
+    setProducts(updatedProducts);
+
+    // Reset inputs
     setQuantity(1);
+    setSelectedProductId("");
   };
 
   const handleRemove = (id: string) => {
@@ -88,10 +99,10 @@ const BillingPage = () => {
     const data = await res.json();
     if (res.ok) {
       alert("Bill Saved!");
+
       const billUrl = `${BASE_URL}/billing/invoice/${data.billId}`;
       window.open(billUrl, "_blank");
 
-      // ✅ WhatsApp sending logic
       if (whatsappNumber.trim()) {
         const cleanNumber = whatsappNumber.replace(/\D/g, "");
         const message = `Thank you for shopping with us! 🧾\nHere is your bill:\n${billUrl}\n\nTotal: ₹${totalAmount}`;
@@ -104,14 +115,16 @@ const BillingPage = () => {
       setSelectedProductId("");
       setQuantity(1);
       setWhatsappNumber("");
-      fetchProducts();
+      fetchProducts(); // refresh stock
     } else {
       alert(data.message || "Checkout failed");
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleAddToBill();
+    if (e.key === "Enter") {
+      handleAddToBill();
+    }
   };
 
   const totalAmount = billItems.reduce(
@@ -119,41 +132,92 @@ const BillingPage = () => {
     0
   );
 
+  // Group products by category
+  const groupedProducts = products.reduce<Record<string, Product[]>>(
+    (groups, product) => {
+      if (!groups[product.category]) {
+        groups[product.category] = [];
+      }
+      groups[product.category].push(product);
+      return groups;
+    },
+    {}
+  );
+
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">🧾 Retail POS - Billing</h2>
 
-      <div className="flex gap-4 mb-4">
-        <select
-          className="p-2 border rounded w-1/2"
-          value={selectedProductId}
-          onChange={(e) => setSelectedProductId(e.target.value)}
-        >
-          <option value="">Select Product</option>
-          {products.map((product) => (
-            <option key={product._id} value={product._id}>
-              {product.name} (₹{product.price} | Stock: {product.stock})
-            </option>
-          ))}
-        </select>
+      {/* Category Buttons for Fast Product Selection */}
+      {Object.entries(groupedProducts).map(([category, catProducts]) => (
+        <div key={category} className="mb-4">
+          <h4 className="font-semibold text-lg mb-2">{category}</h4>
+          <div className="flex flex-wrap gap-2">
+            {catProducts.map((product) => (
+              <button
+                key={product._id}
+                disabled={product.stock === 0}
+                onClick={() => setSelectedProductId(product._id)}
+                className={`px-3 py-1 rounded border ${
+                  selectedProductId === product._id
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100"
+                } ${product.stock === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {product.name} (₹{product.price})
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
-        <input
-          type="number"
-          className="p-2 border rounded w-1/4"
-          min={1}
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          onKeyDown={handleKeyDown}
-        />
+      {/* Fallback Dropdown + Quantity + Add */}
+      <div className="flex gap-4 mb-4 items-end">
+        <div className="flex-1">
+          <label className="block font-medium mb-1">Select Product (Optional)</label>
+          <select
+            className="p-2 border rounded w-full"
+            value={selectedProductId}
+            onChange={(e) => setSelectedProductId(e.target.value)}
+          >
+            <option value="">Select Product</option>
+            {Object.entries(groupedProducts).map(([category, products]) => (
+              <optgroup key={category} label={category}>
+                {products.map((product) => (
+                  <option
+                    key={product._id}
+                    value={product._id}
+                    disabled={product.stock === 0}
+                  >
+                    {product.name} (₹{product.price} | Stock: {product.stock})
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+
+        <div className="w-32">
+          <label className="block font-medium mb-1">Quantity</label>
+          <input
+            type="number"
+            className="p-2 border rounded w-full"
+            min={1}
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
 
         <button
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 h-10 mt-5"
           onClick={handleAddToBill}
         >
           Add to Bill
         </button>
       </div>
 
+      {/* Bill Items */}
       <div className="bg-white rounded shadow p-4 mb-6">
         <h3 className="text-lg font-semibold mb-2">🛒 Bill Items</h3>
         {billItems.length === 0 ? (
@@ -180,6 +244,7 @@ const BillingPage = () => {
         )}
       </div>
 
+      {/* Payment Method */}
       <div className="mb-4 flex items-center gap-4">
         <label htmlFor="payment" className="font-medium">
           Payment Method:
@@ -196,7 +261,7 @@ const BillingPage = () => {
         </select>
       </div>
 
-      {/* ✅ WhatsApp number input */}
+      {/* WhatsApp */}
       <div className="mb-4">
         <label className="block font-medium mb-1">
           Customer WhatsApp Number:
@@ -210,6 +275,7 @@ const BillingPage = () => {
         />
       </div>
 
+      {/* Total & Checkout */}
       <div className="flex justify-between items-center">
         <span className="text-xl font-bold">Total: ₹{totalAmount}</span>
         <button
