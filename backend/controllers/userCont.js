@@ -33,6 +33,7 @@ exports.login=async (req,res)=>{
         secure: process.env.NODE_ENV === "production", // works only on https in production
         sameSite: "Strict", // prevent CSRF
         maxAge: 60 * 60 * 1000, // 1 hour
+        domain:"" // have to add--------------------------
       })
       .status(200)
       .json({ message: "Login successful", role: user.role });
@@ -47,6 +48,7 @@ exports.logout = (req, res) => {
       httpOnly: true,
       sameSite: "None", // Use "None" if frontend/backend are on different domains AND you're using HTTPS
       secure: process.env.NODE_ENV === "production", // Set secure in production
+      domain:"" // have to add--------------------------
     });
   
     res.status(200).json({ message: "Logged out successfully" });
