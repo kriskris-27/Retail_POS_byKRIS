@@ -10,13 +10,18 @@ connectDB();
 
 const app = express(); // express is starts here
 
+app.use(express.json()); //we can just communicate by using cors but what data that we are going to communicate i should need to be mentioned json is the format of data
+app.use(cookieParser());
+
+const allowedOrigins = [
+    "http://localhost:5173",                // for local dev
+    "https://software-gold.vercel.app",     // your deployed frontend URL
+  ];
 app.use(cors({
-    origin: "https://software-gold.vercel.app", // Replace with actual frontend URL
+    origin: allowedOrigins, // Replace with actual frontend URL
     credentials: true, // Important for cookies
   })); // manage communication with frontend
 
-app.use(express.json()); //we can just communicate by using cors but what data that we are going to communicate i should need to be mentioned json is the format of data
-app.use(cookieParser());
 
 const PORT = process.env.PORT ||  5000
 
