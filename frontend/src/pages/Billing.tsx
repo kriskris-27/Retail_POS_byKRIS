@@ -92,7 +92,7 @@ const BillingPage = () => {
           price,
           quantity,
         })),
-        paymentMethod,
+        paymentMethod,  
       }),
     });
 
