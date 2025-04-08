@@ -27,16 +27,15 @@ exports.login=async (req,res)=>{
         const token =jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:"1h"});
 
 
-         res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // works only on https in production
-        sameSite: "Strict", // prevent CSRF
-        maxAge: 60 * 60 * 1000, // 1 hour
-        domain:"" // have to add--------------------------
-      })
-      .status(200)
-      .json({ message: "Login successful", role: user.role });
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // secure only in production
+            sameSite: "None", // for cross-origin cookie
+            maxAge: 60 * 60 * 1000, // 1 hour
+          })
+          .status(200)
+          .json({ message: "Login successful", role: user.role });
+          
     }
     catch(error){
         res.status(500).json({message:"Error logging in [user]:developer krissss???"})
@@ -45,13 +44,13 @@ exports.login=async (req,res)=>{
 
 exports.logout = (req, res) => {
     res.clearCookie("token", {
-      httpOnly: true,
-      sameSite: "None", // Use "None" if frontend/backend are on different domains AND you're using HTTPS
-      secure: process.env.NODE_ENV === "production", // Set secure in production
-      domain:"" // have to add--------------------------
-    });
-  
-    res.status(200).json({ message: "Logged out successfully" });
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+      });
+      
+      res.status(200).json({ message: "Logged out successfully" });
+      
   };
   
   
