@@ -22,8 +22,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-white px-4 font-[Poppins]">
       <div className="w-full max-w-[400px]">
         {/* Logo */}
-        <div className="flex justify-center mb-10">
-          <img  alt="Logo" className="w-[50px]" />
+        <div className="text-2xl font-semibold text-center mb-10">
+          <h2>Welcome back,hope its pleasant day out there</h2>
         </div>
 
         {/* Form */}

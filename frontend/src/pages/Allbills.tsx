@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext"; // adjust path as needed
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 type Product = {
@@ -22,13 +23,21 @@ type Bill = {
 };
 
 const AllbillsPage = () => {
+  const { user } = useAuth(); // 🔐 access current user's role
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | "daily" | "weekly" | "monthly">("all");
 
   const fetchBills = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/billing/`, {
+      setLoading(true);
+      let url = `${BASE_URL}/billing/`;
+      if (filter !== "all") {
+        url += `?filter=${filter}`;
+      }
+
+      const res = await fetch(url, {
         credentials: "include",
       });
 
@@ -37,8 +46,6 @@ const AllbillsPage = () => {
       }
 
       const data: Bill[] = await res.json();
-    //   console.log((data));
-      
       setBills(data);
     } catch (err: unknown) {
       setError("Failed to load bills. Please try again later.");
@@ -48,13 +55,61 @@ const AllbillsPage = () => {
     }
   };
 
+  const handleDeleteByFilter = async () => {
+    const confirmed = confirm(`Are you sure you want to delete ${filter} bills?`);
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/billing/?filterType=${filter}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete bills.");
+      }
+
+      alert(`${filter.charAt(0).toUpperCase() + filter.slice(1)} bills deleted successfully.`);
+      fetchBills(); // refresh list after deletion
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting bills. Try again later.");
+    }
+  };
+
   useEffect(() => {
     fetchBills();
-  }, []);
+  }, [filter]);
 
   return (
     <div className="max-w-5xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">📄 All Bills</h2>
+
+      {/* Timeline Filter & Delete Button */}
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        {["all", "daily", "weekly", "monthly"].map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f as typeof filter)}
+            className={`px-4 py-2 rounded-full border text-sm transition-all ${
+              filter === f
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+
+        {filter !== "all" && user?.role === "admin" && (
+          <button
+            onClick={handleDeleteByFilter}
+            className="ml-auto px-4 py-2 bg-red-600 text-white text-sm rounded-full hover:bg-red-700 transition-all"
+          >
+            🗑️ Delete {filter.charAt(0).toUpperCase() + filter.slice(1)} Bills
+          </button>
+        )}
+      </div>
 
       {loading ? (
         <p className="text-gray-600">Loading bills...</p>
