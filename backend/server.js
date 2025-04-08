@@ -11,7 +11,7 @@ connectDB();
 const app = express(); // express is starts here
 
 app.use(cors({
-    origin: "http://localhost:5173", // Replace with actual frontend URL
+    origin: "https://software-gold.vercel.app", // Replace with actual frontend URL
     credentials: true, // Important for cookies
   })); // manage communication with frontend
 
