@@ -129,82 +129,88 @@ exports.deleteBills = async (req, res) => {
     }
   };
 
-exports.generatePDF = async (req, res) => {
+  exports.generatePDF = async (req, res) => {
     try {
-        const bill = await Bill.findById(req.params.billId)
-            .populate("items.product", "name price");
-
-        if (!bill) return res.status(404).json({ message: "Invoice not Found" });
-
-        const doc = new PDFDocument({ margin: 50 });
-
-        res.setHeader("Content-Disposition", `attachment; filename=invoice-${bill._id}.pdf`);
-        res.setHeader("Content-Type", "application/pdf");
-
-        doc.pipe(res);
-
-        // Header
+      const bill = await Bill.findById(req.params.billId).populate("items.product", "name price");
+  
+      if (!bill) return res.status(404).json({ message: "Invoice not Found" });
+  
+      const doc = new PDFDocument({ margin: 50 });
+  
+      res.setHeader("Content-Disposition", `attachment; filename=invoice-${bill._id}.pdf`);
+      res.setHeader("Content-Type", "application/pdf");
+  
+      doc.pipe(res);
+  
+      // Header
+      doc
+        .fontSize(22)
+        .text("RETAIL INVOICE", { align: "center" })
+        .moveDown(1);
+  
+      // Invoice Info
+      doc
+        .fontSize(12)
+        .text(`Invoice ID: ${bill._id}`)
+        .text(`Date: ${new Date(bill.createdAt).toLocaleString()}`)
+        .text(`Payment Method: ${bill.paymentMethod}`)
+        .moveDown();
+  
+      // Define column positions
+      const itemX = 50;
+      const qtyX = 300;
+      const priceX = 370;
+      const subtotalX = 460;
+  
+      // Table Header
+      doc
+        .fontSize(12)
+        .font("Helvetica-Bold")
+        .text("Item", itemX)
+        .text("Qty", qtyX)
+        .text("Price", priceX)
+        .text("Subtotal", subtotalX)
+        .moveDown(0.5);
+  
+      doc.font("Helvetica");
+  
+      // Table Rows
+      bill.items.forEach(item => {
+        const name = item.product?.name || "Unknown";
+        const price = item.product?.price || item.price;
+        const quantity = item.quantity;
+        const subtotal = price * quantity;
+  
         doc
-            .fontSize(22)
-            .text("RETAIL INVOICE", { align: "center" })
-            .moveDown(1);
-
-        // Invoice Info
-        doc
-            .fontSize(12)
-            .text(`Invoice ID: ${bill._id}`)
-            .text(`Date: ${new Date(bill.createdAt).toLocaleString()}`)
-            .text(`Payment Method: ${bill.paymentMethod}`)
-            .moveDown();
-
-        // Table Header
-        doc
-            .fontSize(12)
-            .font("Helvetica-Bold")
-            .text("Item", 50)
-            .text("Qty", 250, undefined, { width: 50, align: "right" })
-            .text("Price", 310, undefined, { width: 100, align: "right" })
-            .text("Subtotal", 420, undefined, { width: 100, align: "right" })
-            .moveDown(0.5);
-
-        doc.font("Helvetica");
-
-        // Table Rows
-        bill.items.forEach(item => {
-            const name = item.product?.name || "Unknown";
-            const price = item.product?.price || item.price;
-            const quantity = item.quantity;
-            const subtotal = price * quantity;
-
-            doc
-                .text(name, 50)
-                .text(quantity, 250, undefined, { width: 50, align: "right" })
-                .text(`₹${price.toFixed(2)}`, 310, undefined, { width: 100, align: "right" })
-                .text(`₹${subtotal.toFixed(2)}`, 420, undefined, { width: 100, align: "right" });
-        });
-
-        doc.moveDown(1);
-
-        // Total
-        doc
-            .font("Helvetica-Bold")
-            .fontSize(14)
-            .text(`Total: ₹${bill.totalAmount.toFixed(2)}`, { align: "right" });
-
-        doc.moveDown(2);
-
-        // Footer
-        doc
-            .fontSize(10)
-            .font("Helvetica")
-            .text("Thank you for shopping with Kris Retail POS.", { align: "center" })
-            .text("For support, contact us at support@krisretail.com", { align: "center" });
-
-        doc.end();
+          .text(name, itemX)
+          .text(quantity.toString(), qtyX)
+          .text(`₹${price.toFixed(2)}`, priceX)
+          .text(`₹${subtotal.toFixed(2)}`, subtotalX);
+      });
+  
+      doc.moveDown(1);
+  
+      // Total
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(14)
+        .text(`Total: ₹${bill.totalAmount.toFixed(2)}`, subtotalX, doc.y + 10, { align: "right" });
+  
+      doc.moveDown(2);
+  
+      // Footer
+      doc
+        .fontSize(10)
+        .font("Helvetica")
+        .text("Thank you for shopping with Kris Retail POS.", { align: "center" })
+        .text("For support, contact us at support@krisretail.com", { align: "center" });
+  
+      doc.end();
     } catch (error) {
-        console.error("PDF Error:", error);
-        if (!res.headersSent) {
-            res.status(500).json({ message: "Error generating PDF" });
-        }
+      console.error("PDF Error:", error);
+      if (!res.headersSent) {
+        res.status(500).json({ message: "Error generating PDF" });
+      }
     }
-};
+  };
+  
