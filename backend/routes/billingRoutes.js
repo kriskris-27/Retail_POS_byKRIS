@@ -7,7 +7,7 @@ const router= express.Router();
 router.post("/create", protect,cashierOrAdmin,saveInvoice);
 router.get("/", protect,fetchBill);
 
-router.get("/invoice/:billId",protect,generatePDF);
+router.get("/invoice/:billId",generatePDF);
 
 router.delete("/", protect,adminOnly,deleteBills);
 
