@@ -156,7 +156,7 @@ exports.deleteBills = async (req, res) => {
         doc
             .font(headerFont)
             .fontSize(20)
-            .text('KRIS RETAIL', { align: 'center' })
+            .text('BUSINESS RETAIL', { align: 'center' })
             .fontSize(10)
             .text('123 Business Street, City, State - 100001', { align: 'center' })
             .text('Phone: +91 9876543210', { align: 'center' })
@@ -277,7 +277,7 @@ exports.deleteBills = async (req, res) => {
             .fontSize(10)
             .text('Thank you for your business!', { align: 'center' })
             .moveDown(0.3)
-            .text('For any queries, please contact: support@krisretail.com | Phone: +91 9876543210', { align: 'center' });
+            .text('For any queries, please contact: support@retailpos.com | Phone: +91 9876543210', { align: 'center' });
 
         // Final horizontal line
         doc
