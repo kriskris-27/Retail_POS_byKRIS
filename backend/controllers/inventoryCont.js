@@ -27,18 +27,3 @@ exports.expiringProducts=async (req,res)=>{
     }
 }
 
-exports.reduceStock=async (req,res)=>{
-    try{
-        const {items} = req.body;
-        for (let item in items){
-            await Product.findByIdAndUpdates(items.productId,{
-                $inc:{stock:-item.quantity}
-            });
-        }
-        res.status(500).json({ message: "Error fetching expiring products" });
-    }catch(error)
-    {
-        res.status(500).json({ message: "Error updating stock" });
-
-    }
-}
