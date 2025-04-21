@@ -19,7 +19,7 @@ const Reports: React.FC = () => {
         setError("");
         setReport(null);
         try {
-            const response = await fetch(`${BASE_URL}/api/advanced-reports/sales-report?period=${period}`, {
+            const response = await fetch(`${BASE_URL}/advanced-reports/sales-report?period=${period}`, {
                 credentials: "include"
             });
             if (!response.ok) {
