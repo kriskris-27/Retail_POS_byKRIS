@@ -15,7 +15,7 @@ app.use(cookieParser());
 
 const allowedOrigins = [
     "http://localhost:5173",                // for local dev
-    "https://software-gold.vercel.app",     // your deployed frontend URL
+    "https://software-sandy.vercel.app",     // your deployed frontend URL
   ];
 app.use(cors({
     origin: allowedOrigins, // Replace with actual frontend URL
