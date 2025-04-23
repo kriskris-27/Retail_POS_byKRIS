@@ -55,6 +55,7 @@ const AllbillsPage = () => {
     }
   };
 
+  
   const handleDeleteByFilter = async () => {
     const confirmed = confirm(`Are you sure you want to delete ${filter} bills?`);
     if (!confirmed) return;
