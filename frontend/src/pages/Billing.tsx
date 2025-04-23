@@ -81,6 +81,11 @@ const BillingPage = () => {
     setBillItems(billItems.filter((item) => item.product !== id));
   };
 
+  const totalAmount = billItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+  
   const handleCheckout = async () => {
     const res = await fetch(`${BASE_URL}/billing/create`, {
       method: "POST",
@@ -92,17 +97,18 @@ const BillingPage = () => {
           price,
           quantity,
         })),
-        paymentMethod,  
+        paymentMethod,
       }),
     });
-
+  
     const data = await res.json();
     if (res.ok) {
       alert("Bill Saved!");
-
+  
       const billUrl = `${BASE_URL}/billing/invoice/${data.billId}`;
       window.open(billUrl, "_blank");
-
+  
+      // ✅ Correct WhatsApp Sending
       if (whatsappNumber.trim()) {
         const cleanNumber = whatsappNumber.replace(/\D/g, "");
         const message = `Thank you for shopping with us! 🧾\nHere is your bill:\n${billUrl}\n\nTotal: ₹${totalAmount}`;
@@ -110,7 +116,7 @@ const BillingPage = () => {
         const whatsappLink = `https://wa.me/91${cleanNumber}?text=${encodedMsg}`;
         window.open(whatsappLink, "_blank");
       }
-
+  
       setBillItems([]);
       setSelectedProductId("");
       setQuantity(1);
@@ -120,6 +126,7 @@ const BillingPage = () => {
       alert(data.message || "Checkout failed");
     }
   };
+  
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -127,10 +134,7 @@ const BillingPage = () => {
     }
   };
 
-  const totalAmount = billItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+ 
 
   // Group products by category
   const groupedProducts = products.reduce<Record<string, Product[]>>(
