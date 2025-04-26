@@ -116,7 +116,7 @@ const AllbillsPage = () => {
         <p className="text-gray-600">Loading bills...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
-      ) : bills.length === 0 ? (
+      ) : bills.length === 0 ?  (
         <p className="text-gray-500">No bills found.</p>
       ) : (
         <div className="space-y-6">
