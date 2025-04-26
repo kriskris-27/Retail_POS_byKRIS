@@ -4,6 +4,6 @@ const { salesReport }=require("../controllers/reportCont")
 
 const router= express.Router();
 
-router.get("/sales-report",protect,adminOrManager,salesReport);
+router.get("/sales-report",salesReport);
 
 module.exports=router

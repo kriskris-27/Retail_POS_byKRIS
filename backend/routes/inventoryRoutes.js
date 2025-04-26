@@ -4,9 +4,9 @@ const {lowStock, expiringProducts}= require("../controllers/inventoryCont")
 const router=express.Router();
 
 
-router.get("/low-stock",protect,adminOrManager,lowStock)
+router.get("/low-stock",lowStock)
 
-router.get("/expiring-soon",protect,adminOrManager,expiringProducts);
+router.get("/expiring-soon",expiringProducts);
 
 
 module.exports = router;

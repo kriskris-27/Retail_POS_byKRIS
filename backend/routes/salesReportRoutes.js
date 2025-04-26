@@ -4,13 +4,13 @@ const { dailySales, monthySales, yearlySales, bestSelling }=require("../controll
 const router = express.Router()
 
 
-router.get("/daily",protect,adminOrManager,dailySales);
+router.get("/daily",dailySales);
 
-router.get("/monthly",protect,adminOrManager,monthySales
+router.get("/monthly",monthySales
 );
 
-router.get("/yearly", protect, adminOrManager,yearlySales);
+router.get("/yearly",yearlySales);
   
-router.get("/top-products",protect,adminOrManager,bestSelling)
+router.get("/top-products",bestSelling)
 
 module.exports = router;
