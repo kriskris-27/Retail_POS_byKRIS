@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+/*const jwt = require("jsonwebtoken");
 const User = require('../models/userModel');
 
 const adminAuth= async(req,res,next)=>{
@@ -25,4 +25,4 @@ const adminAuth= async(req,res,next)=>{
         res.status(401).json({message:"Unauthorized",error});
     }
 }
-module.exports = {adminAuth}
+module.exports = {adminAuth}*/
