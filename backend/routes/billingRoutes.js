@@ -4,12 +4,12 @@ const { saveInvoice, generatePDF, fetchBill ,deleteBills} = require("../controll
 const router= express.Router();
 
 
-router.post("/create", protect,cashierOrAdmin,saveInvoice);
-router.get("/", protect,fetchBill);
+router.post("/create", saveInvoice);
+router.get("/", fetchBill);
 
 router.get("/invoice/:billId",generatePDF);
 
-router.delete("/", protect,adminOnly,deleteBills);
+router.delete("/",deleteBills);
 
 
 module.exports=router;

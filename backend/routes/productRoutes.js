@@ -9,6 +9,6 @@ router.post("/",createProduct )
 
 router.put("/:id",updateProduct)
 
-router.delete("/:id",protect,adminOnly,deleteProduct)
+router.delete("/:id",deleteProduct)
 
 module.exports=router;
