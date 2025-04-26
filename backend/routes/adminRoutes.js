@@ -4,10 +4,10 @@ const router = express.Router();
 const { getUsers, createUser, updateUser, deleteUser } = require("../controllers/adminCont");
 
 
-router.get('/',protect,adminOnly,getUsers);
-router.post('/create',protect,adminOnly,createUser);
-router.put('/update/:id',protect,adminOnly,updateUser);
-router.delete('/delete/:id',protect,adminOnly,deleteUser);
+router.get('/',getUsers);
+router.post('/create',createUser);
+router.put('/update/:id',updateUser);
+router.delete('/delete/:id',deleteUser);
 
 module.exports= router
 
