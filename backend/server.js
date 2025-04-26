@@ -61,3 +61,8 @@ app.use("/api/advanced-reports",advancedreport)
 //Admin 
 const adminAuth=require("./routes/adminRoutes.js");
 app.use("/api/admin",adminAuth)
+
+app.get('/check-cookies', (req, res) => {
+    console.log('Cookies received:', req.cookies); // Server side log
+    res.json({ cookies: req.cookies }); // Client side response
+});
