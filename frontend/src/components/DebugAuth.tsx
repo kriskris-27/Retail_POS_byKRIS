@@ -1,9 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
+interface DebugInfo {
+    token?: string;
+    userData?: any;
+    currentUser?: any;
+    sessionStorage?: {
+        token: string | null;
+        user: string | null;
+    };
+    verificationStatus?: string;
+    error?: string;
+}
+
 const DebugAuth = () => {
     const { user, verifyAuth } = useAuth();
-    const [debugInfo, setDebugInfo] = useState<any>({});
+    const [debugInfo, setDebugInfo] = useState<DebugInfo>({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -24,12 +36,12 @@ const DebugAuth = () => {
                 });
 
                 const isVerified = await verifyAuth();
-                setDebugInfo(prev => ({
+                setDebugInfo((prev: DebugInfo) => ({
                     ...prev,
                     verificationStatus: isVerified ? "Verified" : "Not Verified"
                 }));
             } catch (error) {
-                setDebugInfo(prev => ({
+                setDebugInfo((prev: DebugInfo) => ({
                     ...prev,
                     error: error instanceof Error ? error.message : "Unknown error"
                 }));
