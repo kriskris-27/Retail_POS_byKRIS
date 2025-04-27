@@ -3,13 +3,10 @@ const { protect, cashierOrAdmin, adminOnly } = require("../middleware/authMiddle
 const { saveInvoice, generatePDF, fetchBill, deleteBills } = require("../controllers/billingCont");
 const router = express.Router();
 
-// Apply protect middleware to all routes first
-router.use(protect);
-
-// Then apply role-specific middleware
-router.post("/create", cashierOrAdmin, saveInvoice);
-router.get("/", cashierOrAdmin, fetchBill);
-router.delete("/", adminOnly, deleteBills);
+// Protected routes - require authentication
+router.post("/create", protect, cashierOrAdmin, saveInvoice);
+router.get("/", protect, cashierOrAdmin, fetchBill);
+router.delete("/", protect, adminOnly, deleteBills);
 
 // Public route for PDF invoices - no authentication required
 router.get("/invoice/:billId", generatePDF);
