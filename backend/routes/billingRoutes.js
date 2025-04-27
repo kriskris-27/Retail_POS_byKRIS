@@ -1,15 +1,12 @@
 const express= require("express");
-const { protect, cashierOrAdmin,adminOnly } =require("../middleware/authMiddleware");
-const { saveInvoice, generatePDF, fetchBill ,deleteBills} = require("../controllers/billingCont");
-const router= express.Router();
+const { cashierOrAdmin, adminOnly } = require("../middleware/authMiddleware");
+const { saveInvoice, generatePDF, fetchBill, deleteBills } = require("../controllers/billingCont");
+const router = express.Router();
 
-// Apply protect middleware to all routes
-router.post("/create", protect,cashierOrAdmin,saveInvoice);
-router.get("/", protect,fetchBill);
+// Simplified routes without token checks
+router.post("/create", cashierOrAdmin, saveInvoice);
+router.get("/", fetchBill);
+router.get("/invoice/:billId", generatePDF);
+router.delete("/", adminOnly, deleteBills);
 
-router.get("/invoice/:billId",generatePDF);
-
-router.delete("/", protect,adminOnly,deleteBills);
-
-
-module.exports=router;
+module.exports = router;

@@ -32,17 +32,13 @@ const AllbillsPage = () => {
   const fetchBills = async () => {
     try {
       setLoading(true);
-      const token = sessionStorage.getItem("token");
       let url = `${BASE_URL}/billing/`;
       if (filter !== "all") {
         url += `?filter=${filter}`;
       }
 
       const res = await fetch(url, {
-        credentials: "include",
-        headers: token ? {
-          "Authorization": `Bearer ${token}`
-        } : {}
+        credentials: "include"
       });
 
       if (!res.ok) {
@@ -65,13 +61,9 @@ const AllbillsPage = () => {
     if (!confirmed) return;
 
     try {
-      const token = sessionStorage.getItem("token");
       const res = await fetch(`${BASE_URL}/billing/?filterType=${filter}`, {
         method: "DELETE",
-        credentials: "include",
-        headers: token ? {
-          "Authorization": `Bearer ${token}`
-        } : {}
+        credentials: "include"
       });
 
       if (!res.ok) {
