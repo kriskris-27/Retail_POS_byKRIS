@@ -24,14 +24,14 @@ exports.login=async (req,res)=>{
         const isMatch= await bcrypt.compare(password,user.password);
         if(!isMatch) return res.status(400).json({ message: "Invalid email or password check and come again"});
 
-        const token =jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:"1h"});
+        const token =jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:"4h"});
 
         // Set cookie options based on environment
         const cookieOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production", // Only use secure in production
             sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Strict in production
-            maxAge: 60 * 60 * 1000, // 1 hour
+            maxAge: 5*60 * 60 * 1000, // 1 hour
             path: "/", // Ensure cookie is available for all paths
             domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined // Use environment variable
         };
