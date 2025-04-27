@@ -162,6 +162,10 @@ const AllbillsPage = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline text-sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open(`${BASE_URL}/billing/invoice/${bill._id}`, "_blank");
+                  }}
                 >
                   📄 View Invoice
                 </a>

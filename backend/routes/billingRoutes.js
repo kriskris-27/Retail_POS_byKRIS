@@ -9,7 +9,9 @@ router.use(protect);
 // Then apply role-specific middleware
 router.post("/create", cashierOrAdmin, saveInvoice);
 router.get("/", cashierOrAdmin, fetchBill);
-router.get("/invoice/:billId", cashierOrAdmin, generatePDF);
 router.delete("/", adminOnly, deleteBills);
+
+// Public route for PDF invoices - no authentication required
+router.get("/invoice/:billId", generatePDF);
 
 module.exports = router;
