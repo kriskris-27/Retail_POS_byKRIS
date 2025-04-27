@@ -26,15 +26,23 @@ exports.login=async (req,res)=>{
 
         const token =jwt.sign({id:user._id,role:user.role},process.env.JWT_SECRET,{expiresIn:"1h"});
 
-
-        res.cookie("token", token, {
+        // Set cookie options based on environment
+        const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // secure only in production
-            sameSite: "None", // for cross-origin cookie
+            secure: process.env.NODE_ENV === "production", // Only use secure in production
+            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Strict in production
             maxAge: 60 * 60 * 1000, // 1 hour
-          })
-          .status(200)
-          .json({ message: "Login successful", role: user.role });
+            path: "/", // Ensure cookie is available for all paths
+            domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined // Use environment variable
+        };
+
+        res.cookie("token", token, cookieOptions)
+        .status(200)
+        .json({ 
+            message: "Login successful", 
+            role: user.role,
+            token: token // Send token in response for mobile
+        });
           
     }
     catch(error){

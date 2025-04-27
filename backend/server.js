@@ -16,12 +16,24 @@ app.use(cookieParser());
 const allowedOrigins = [
     "http://localhost:5173",                // for local dev
     "https://software-sandy.vercel.app",     // your deployed frontend URL
-  ];
-app.use(cors({
-    origin: allowedOrigins, // Replace with actual frontend URL
-    credentials: true, // Important for cookies
-  })); // manage communication with frontend
+];
 
+app.use(cors({
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps)
+        if (!origin) return callback(null, true);
+        
+        // Check if the origin is in our allowedOrigins list
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true, // Important for cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const PORT = process.env.PORT ||  5000
 

@@ -149,20 +149,20 @@ const BillingPage = () => {
   );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">🧾 Bill Vision POS - Billing</h2>
+    <div className="p-4 md:p-6 max-w-4xl mx-auto">
+      <h2 className="text-xl md:text-2xl font-bold mb-4">🧾 Bill Vision POS - Billing</h2>
 
       {/* Category Buttons for Fast Product Selection */}
       {Object.entries(groupedProducts).map(([category, catProducts]) => (
         <div key={category} className="mb-4">
-          <h4 className="font-semibold text-lg mb-2">{category}</h4>
+          <h4 className="font-semibold text-base md:text-lg mb-2">{category}</h4>
           <div className="flex flex-wrap gap-2">
             {catProducts.map((product) => (
               <button
                 key={product._id}
                 disabled={product.stock === 0}
                 onClick={() => setSelectedProductId(product._id)}
-                className={`px-3 py-1 rounded border ${
+                className={`px-3 py-2 md:py-1 rounded border text-sm md:text-base ${
                   selectedProductId === product._id
                     ? "bg-blue-600 text-white"
                     : "bg-gray-100"
@@ -176,11 +176,11 @@ const BillingPage = () => {
       ))}
 
       {/* Fallback Dropdown + Quantity + Add */}
-      <div className="flex gap-4 mb-4 items-end">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row gap-4 mb-4 items-end">
+        <div className="w-full md:flex-1">
           <label className="block font-medium mb-1">Select Product (Optional)</label>
           <select
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full text-base"
             value={selectedProductId}
             onChange={(e) => setSelectedProductId(e.target.value)}
           >
@@ -201,11 +201,11 @@ const BillingPage = () => {
           </select>
         </div>
 
-        <div className="w-32">
+        <div className="w-full md:w-32">
           <label className="block font-medium mb-1">Quantity</label>
           <input
             type="number"
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full text-base"
             min={1}
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
@@ -214,7 +214,7 @@ const BillingPage = () => {
         </div>
 
         <button
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 h-10 mt-5"
+          className="w-full md:w-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 h-10 mt-5 text-base"
           onClick={handleAddToBill}
         >
           Add to Bill
@@ -231,13 +231,13 @@ const BillingPage = () => {
             {billItems.map((item) => (
               <li
                 key={item.product}
-                className="flex justify-between items-center"
+                className="flex justify-between items-center text-sm md:text-base"
               >
                 <span>
                   {item.name} - ₹{item.price} × {item.quantity}
                 </span>
                 <button
-                  className="text-red-500 hover:underline"
+                  className="text-red-500 hover:underline px-2 py-1"
                   onClick={() => handleRemove(item.product)}
                 >
                   Remove
@@ -249,13 +249,13 @@ const BillingPage = () => {
       </div>
 
       {/* Payment Method */}
-      <div className="mb-4 flex items-center gap-4">
+      <div className="mb-4 flex flex-col md:flex-row items-start md:items-center gap-4">
         <label htmlFor="payment" className="font-medium">
           Payment Method:
         </label>
         <select
           id="payment"
-          className="p-2 border rounded"
+          className="p-2 border rounded w-full md:w-auto text-base"
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
         >
@@ -273,17 +273,17 @@ const BillingPage = () => {
         <input
           type="tel"
           placeholder="e.g. 9876543210"
-          className="p-2 border rounded w-full"
+          className="p-2 border rounded w-full text-base"
           value={whatsappNumber}
           onChange={(e) => setWhatsappNumber(e.target.value)}
         />
       </div>
 
       {/* Total & Checkout */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <span className="text-xl font-bold">Total: ₹{totalAmount}</span>
         <button
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          className="w-full md:w-auto bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 text-base"
           onClick={handleCheckout}
           disabled={billItems.length === 0}
         >

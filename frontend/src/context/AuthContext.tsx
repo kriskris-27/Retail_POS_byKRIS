@@ -31,11 +31,6 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
  
     
     const login = async(email:string ,password:string)=>{
-        // if(email && password){
-        //     setUser({email});
-        //     navigate("/");
-        // }
-
         try{
             const res= await fetch(`${BASE_URL}/users/login`, {
                 method:"POST",
@@ -43,35 +38,58 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
                 credentials:"include",
                 body:JSON.stringify({email,password})
             });
-            if(!res.ok) throw new Error("Login Failed");
+            
+            if(!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || "Login Failed");
+            }
+            
             const data = await res.json();
             const userData = {
                 email,
                 role: data.role,
-              };
+                token: data.token // Store token for mobile
+            };
+            
+            // Validate token before storing
+            if (!data.token) {
+                throw new Error("No token received from server");
+            }
+            
             setUser(userData);
+            // Store token in sessionStorage for mobile
+            sessionStorage.setItem("token", data.token);
             navigate("/");
         }
         catch(err) {
-            console.error("Login failed:",err);
-            alert("Login failed: Invalid credentials or network issue");
+            console.error("Login failed:", err);
+            alert(err instanceof Error ? err.message : "Login failed: Invalid credentials or network issue");
         }
     };
 
     const logout = async() =>{
         try{
+            const token = sessionStorage.getItem("token");
+            if (!token) {
+                throw new Error("No token found");
+            }
+            
             await fetch(`${BASE_URL}/users/logout`,{
                 method:"POST",
-                credentials:"include"
+                credentials:"include",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
+            
             setUser(null);
             sessionStorage.removeItem("user");
+            sessionStorage.removeItem("token");
             navigate("/login");
         }catch(err){
             console.error("Logout failed:", err);
-      alert("Logout failed. Try again.");
+            alert(err instanceof Error ? err.message : "Logout failed. Try again.");
         }
-        
     }
   return (
     <AuthContext.Provider value={{user,login,logout}}>
