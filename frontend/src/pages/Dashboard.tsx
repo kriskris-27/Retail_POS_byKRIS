@@ -1,4 +1,3 @@
-import DebugAuth from '../components/DebugAuth';
 
 const Dashboard = () => {
   return (
@@ -7,7 +6,7 @@ const Dashboard = () => {
       <p className="mb-6">Welcome to your Bill Vision POS dashboard.</p>
       
       {/* Debug Component */}
-      <DebugAuth />
+      
     </div>
   );
 };
