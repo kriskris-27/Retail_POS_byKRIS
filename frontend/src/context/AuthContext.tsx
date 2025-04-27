@@ -23,15 +23,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({children}:{children:ReactNode}) => {
     const [user,setUser] = useState<User | null>(()=>{
         const stored = sessionStorage.getItem("user");
-        return stored ? JSON.parse(stored):null;
+        const token = sessionStorage.getItem("token");
+        if (stored && token) {
+            return JSON.parse(stored);
+        }
+        return null;
     });
     const navigate = useNavigate();
 
     useEffect(()=>{
         if(user){
             sessionStorage.setItem("user",JSON.stringify(user));
+            if (user.token) {
+                sessionStorage.setItem("token", user.token);
+            }
         }else{
             sessionStorage.removeItem("user");
+            sessionStorage.removeItem("token");
         }
     },[user]);
 
@@ -40,12 +48,17 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
             const token = sessionStorage.getItem("token");
             console.log("Verifying auth with token:", token ? "Token exists" : "No token");
             
+            if (!token) {
+                console.log("No token found in sessionStorage");
+                return false;
+            }
+
             const res = await fetch(`${BASE_URL}/users/verify`, {
                 method: "GET",
                 credentials: "include",
-                headers: token ? {
+                headers: {
                     "Authorization": `Bearer ${token}`
-                } : {}
+                }
             });
 
             console.log("Verify response status:", res.status);
@@ -88,22 +101,20 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
             const data = await res.json();
             console.log("Login successful, received data:", data);
             
-            const userData = {
-                email,
-                role: data.role,
-                token: data.token,
-                userId: data.userId
-            };
-            
-            // Validate token before storing
             if (!data.token) {
                 console.log("No token received from server");
                 throw new Error("No token received from server");
             }
+
+            const userData = {
+                email: data.user.email,
+                role: data.user.role,
+                token: data.token,
+                userId: data.userId
+            };
             
             console.log("Storing user data and token");
             setUser(userData);
-            // Store token in sessionStorage for mobile
             sessionStorage.setItem("token", data.token);
             console.log("Token stored in sessionStorage");
             

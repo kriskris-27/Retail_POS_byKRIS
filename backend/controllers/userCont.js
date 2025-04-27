@@ -44,7 +44,11 @@ exports.login=async (req,res)=>{
             message: "Login successful", 
             role: user.role,
             token: token, // Send token in response for mobile
-            userId: user._id // Send user ID for reference
+            userId: user._id, // Send user ID for reference
+            user: {
+                email: user.email,
+                role: user.role
+            }
         });
           
     }
