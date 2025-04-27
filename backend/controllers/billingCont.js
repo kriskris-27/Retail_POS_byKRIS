@@ -134,7 +134,9 @@ exports.deleteBills = async (req, res) => {
         const bill = await Bill.findById(req.params.billId)
             .populate("items.product", "name price");
 
-        if (!bill) return res.status(404).json({ message: "Invoice not Found" });
+        if (!bill) {
+            return res.status(404).json({ message: "Invoice not Found" });
+        }
 
         const doc = new PDFDocument({ 
             margin: 40,
