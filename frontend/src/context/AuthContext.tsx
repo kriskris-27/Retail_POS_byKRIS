@@ -108,6 +108,7 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
             }
 
             const userData = {
+                name: data.user.name,
                 email: data.user.email,
                 role: data.user.role,
                 token: data.token,
