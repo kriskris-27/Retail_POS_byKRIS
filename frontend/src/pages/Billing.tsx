@@ -113,7 +113,10 @@ const BillingPage = () => {
     if (res.ok) {
       alert("Bill Saved!");
   
+      // Generate PDF URL without authentication
       const billUrl = `${BASE_URL}/billing/invoice/${data.billId}`;
+      
+      // Open PDF in new tab
       window.open(billUrl, "_blank");
   
       // ✅ Correct WhatsApp Sending
