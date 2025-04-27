@@ -36,16 +36,20 @@ exports.login=async (req,res)=>{
             domain: process.env.NODE_ENV === "production" ? process.env.COOKIE_DOMAIN : undefined // Use environment variable
         };
 
-        res.cookie("token", token, cookieOptions)
-        .status(200)
-        .json({ 
+        // Set cookie for desktop browsers
+        res.cookie("token", token, cookieOptions);
+
+        // Send response with token for mobile
+        res.status(200).json({ 
             message: "Login successful", 
             role: user.role,
-            token: token // Send token in response for mobile
+            token: token, // Send token in response for mobile
+            userId: user._id // Send user ID for reference
         });
           
     }
     catch(error){
+        console.error("Login error:", error);
         res.status(500).json({message:"Error logging in [user]:developer krissss???"})
     }
 }
@@ -60,6 +64,40 @@ exports.logout = (req, res) => {
       res.status(200).json({ message: "Logged out successfully" });
       
   };
+
+// Add a new endpoint to verify authentication
+exports.verifyAuth = async (req, res) => {
+    try {
+        // Check for token in cookies first
+        const token = req.cookies.token;
+        
+        // If no cookie token, check Authorization header
+        const authHeader = req.headers.authorization;
+        const headerToken = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+        
+        const finalToken = token || headerToken;
+        
+        if (!finalToken) {
+            return res.status(401).json({ message: "No authentication token found" });
+        }
+
+        try {
+            const decoded = jwt.verify(finalToken, process.env.JWT_SECRET);
+            res.status(200).json({ 
+                message: "Authentication successful",
+                user: {
+                    id: decoded.id,
+                    role: decoded.role
+                }
+            });
+        } catch (err) {
+            res.status(401).json({ message: "Invalid token" });
+        }
+    } catch (error) {
+        console.error("Auth verification error:", error);
+        res.status(500).json({ message: "Error verifying authentication" });
+    }
+};
   
   
   
