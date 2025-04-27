@@ -27,8 +27,12 @@ const BillingPage = () => {
 
   const fetchProducts = async () => {
     try {
+      const token = sessionStorage.getItem("token");
       const res = await fetch(`${BASE_URL}/products`, {
         credentials: "include",
+        headers: token ? {
+          "Authorization": `Bearer ${token}`
+        } : {}
       });
       const data = await res.json();
       setProducts(data.products || []);
