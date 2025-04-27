@@ -1,15 +1,29 @@
 const jwt = require("jsonwebtoken");
 
 const protect = (req, res, next) => {
-    // Get user from session
-    const user = req.session?.user;
+    // Try to get token from cookies first
+    let token = req.cookies.token;
     
-    if (!user) {
+    // If no cookie token, try to get from Authorization header
+    if (!token) {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        }
+    }
+
+    if (!token) {
         return res.status(401).json({ message: "Not authenticated" });
     }
 
-    req.user = user;
-    next();
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        console.error("Token verification error:", err);
+        res.status(401).json({ message: "Invalid token" });
+    }
 };
 
 const adminOnly = (req, res, next) => {

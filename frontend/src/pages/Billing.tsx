@@ -27,8 +27,12 @@ const BillingPage = () => {
 
   const fetchProducts = async () => {
     try {
+      const token = sessionStorage.getItem("token");
       const res = await fetch(`${BASE_URL}/products`, {
-        credentials: "include"
+        credentials: "include",
+        headers: token ? {
+          "Authorization": `Bearer ${token}`
+        } : {}
       });
       const data = await res.json();
       setProducts(data.products || []);
@@ -87,11 +91,13 @@ const BillingPage = () => {
   );
   
   const handleCheckout = async () => {
+    const token = sessionStorage.getItem("token");
     const res = await fetch(`${BASE_URL}/billing/create`, {
       method: "POST",
       credentials: "include",
       headers: { 
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        ...(token ? { "Authorization": `Bearer ${token}` } : {})
       },
       body: JSON.stringify({
         items: billItems.map(({ product, price, quantity }) => ({
