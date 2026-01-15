@@ -15,17 +15,16 @@ exports.dailySales=async(req,res)=>{
     }
 }
 
-exports.monthySales=async(req,res)=>{
-    try{
-        const startOfMonth = new Date(new Date().getFullYear,new Date.getMonth(),1);
-        const monthlySales= await Bill.aggregate([
-            {$match:{createdAt:{$gte:startOfMonth}}},
-            {$group:{_id:null,totalSales:{$sum:"$totalAmount"},count:{$sum:1}}}
+exports.monthySales = async (req, res) => {
+    try {
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const monthlySales = await Bill.aggregate([
+            { $match: { createdAt: { $gte: startOfMonth } } },
+            { $group: { _id: null, totalSales: { $sum: "$totalAmount" }, count: { $sum: 1 } } }
         ]);
-        res.json(monthlySales.length?monthlySales[0]:{totalSales:0 ,count:0});
-    }catch(error)
-    {
-        res.status(500).json({message:"Error fetching monthly sales"});
+        res.json(monthlySales.length ? monthlySales[0] : { totalSales: 0, count: 0 });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching monthly sales", error: error.message });
     }
 }
 

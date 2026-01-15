@@ -14,7 +14,9 @@ const Login = () => {
     if (user) {
       logout(); // Ends session and redirects to /login
     }
-  }, [user, logout]);
+    // Intentional: run once on page load to clear any existing session
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

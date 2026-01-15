@@ -23,7 +23,7 @@ exports.expiringProducts=async (req,res)=>{
         res.json(expiringProducts)
     }
     catch(error){
-        es.status(500).json({ message: "Error fetching expiring products" });
+        res.status(500).json({ message: "Error fetching expiring products" });
     }
 }
 
