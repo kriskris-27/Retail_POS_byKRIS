@@ -96,7 +96,7 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
             if(!res.ok) {
                 const errorData = await res.json();
                 console.log("Login error data:", errorData);
-                throw new Error(errorData.message || "Login Failed");
+                throw new Error(errorData.message || "Login failed");
             }
             
             const data = await res.json();
@@ -128,7 +128,11 @@ export const AuthProvider = ({children}:{children:ReactNode}) => {
         }
         catch(err) {
             console.error("Login failed:", err);
-            alert(err instanceof Error ? err.message : "Login failed: Invalid credentials or network issue");
+            const message =
+                err instanceof Error
+                    ? err.message
+                    : "Login failed: Invalid credentials or network issue";
+            throw new Error(message);
         }
     };
 
@@ -175,4 +179,3 @@ export const useAuth = ()=>{
     if(!context) throw new Error("useAuth must be used inside AuthProvider");
     return context;
 };
-
