@@ -48,10 +48,11 @@ const Login = () => {
           <section className="bg-white border border-slate-200 rounded-3xl shadow-[0_18px_60px_rgba(15,23,42,0.08)] p-10">
             <p className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-4">Sign in</p>
             <h1 className="text-3xl font-semibold leading-tight mb-3">
-              Keep the counters moving.
+              Use this sample admin account to explore the features
             </h1>
             <p className="text-base text-slate-600">
-              Log in to adjust stock, approve returns, and watch sales in real time—without the noise.
+              email:admin@pos.com
+              password:123456
             </p>
 
             {error && (
